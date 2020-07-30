@@ -6,10 +6,11 @@ import System
 
 class cinput:
 
-    def __init__(self, words, color=True, ghostLetters=True):
+    def __init__(self, words, color=True, ghostLetters=True, readenter=True):
         self.words = words
         self.color = color
         self.ghostLetters = ghostLetters
+        self.readenter = readenter
 
 
 
@@ -28,26 +29,30 @@ class cinput:
 
     def clearfore(self, lens='a'):
         if lens == 'a':lens = len(max(self.words)) + 2
-        for l in range(lens):
-            sys.stdout.write(' ')
-        for l in range(lens):
-            sys.stdout.write('\b')
+        sys.stdout.write(' '*(lens))
+        sys.stdout.write('\b'*(lens))
 
     def clearlast(self, enter):
-        for l in range(len(enter)):
-            sys.stdout.write('\b')
-        for l in range(len(enter)):
-            sys.stdout.write(' ')
-        for l in range(len(enter)):
-            sys.stdout.write('\b')
+        sys.stdout.write('\b'*(len(enter)))
+        sys.stdout.write(' '*(len(enter)))
+        sys.stdout.write('\b'*(len(enter)))
 
     def readline(self, msg='.cInput>'):
         print(msg, end=' ')
         enter = ''
+        getword = False
         while True:
             key = System.Console.ReadKey()
-            if key.Key == 13:
-                break
+            if key.Key == 13 :
+                if self.readenter and enter in self.words:
+                    break
+                elif not self.readenter:
+                    break
+                else:
+                    if getword:
+                        print(msg,color.Fore.GREEN+enter, end=color.Fore.RESET)
+                    else:
+                        print(msg,color.Fore.RED+enter, end=color.Fore.RESET)
 
             if key.Key == 8 and enter != '':
                 sys.stdout.write(' ')
@@ -70,13 +75,23 @@ class cinput:
                         cwords.append(word)
                 if len(cwords) == 1:
                     enter = cwords[0]
-                    print(msg, enter, end='')
+                    print(msg, color.Fore.GREEN+enter, end=color.Fore.RESET)
                 elif len(cwords) > 1:
                     print(color.Fore.LIGHTBLUE_EX, end='')
                     for word in cwords:
-                        print(word, end='    ')
+                        print(word, end=' '*4)
                     print(color.Fore.RESET, end='')
-                    print('\n' + msg, enter, end='')
+                    print('\n' + msg, color.Fore.GREEN+enter, end=color.Fore.RESET)
+                    if self.ghostLetters:
+                        for word in self.words:
+                            if word.startswith(enter):
+                                self.clearfore()
+                                self.writeGostWords(word.replace(enter, '', 1))
+                                sys.stdout.write('\b'*len(word.replace(enter, '', 1)))
+                                break
+                else:
+                    print(msg, color.Fore.RED+enter, end=color.Fore.RESET)
+
 
             if key.Key == System.ConsoleKey.Escape:
                 sys.stdout.write('\b')
@@ -104,8 +119,7 @@ class cinput:
                     if word.startswith(enter):
                         self.clearfore()
                         self.writeGostWords(word.replace(enter, '', 1))
-                        for l in range(len(word.replace(enter, '', 1))):
-                            sys.stdout.write('\b')
+                        sys.stdout.write('\b'*len(word.replace(enter, '', 1)))
                         getword = True
                         break
 
@@ -119,10 +133,13 @@ class cinput:
                 print(color.Fore.RED, end='')
                 self.clearlast(enter)
                 sys.stdout.write(enter)
+                print(color.Fore.RESET, end='')
             elif getword and self.color:
                 print(color.Fore.GREEN, end='')
                 self.clearlast(enter)
                 sys.stdout.write(enter)
+                print(color.Fore.RESET, end='')
+
         self.clearlast(msg + ' ' + enter)
         self.clearfore()
         print(color.Fore.RESET, end='')
