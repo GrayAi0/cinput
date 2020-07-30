@@ -53,7 +53,6 @@ class cinput:
                 sys.stdout.write(' ')
                 sys.stdout.write('\b')
                 self.clearfore()
-                prin(enter)
                 enter = self.popstr(enter, -1)
             elif key.Key == 8 and enter == '':
                 self.clearlast(msg + ' ')
