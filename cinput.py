@@ -26,26 +26,41 @@ class cinput:
         word.pop(lett)
         return ''.join(word)
 
-    def clearline(self):
-        for l in range(len(max(self.words)) + 2):
+    def clearfore(self, lens='a'):
+        if lens == 'a':lens = len(max(self.words)) + 2
+        for l in range(lens):
             sys.stdout.write(' ')
-        for l in range(len(max(self.words)) + 2):
+        for l in range(lens):
             sys.stdout.write('\b')
 
-    def readline(self):
+    def clearlast(self, enter):
+        for l in range(len(enter)):
+            sys.stdout.write('\b')
+        for l in range(len(enter)):
+            sys.stdout.write(' ')
+        for l in range(len(enter)):
+            sys.stdout.write('\b')
+
+    def readline(self, msg='.cInput>'):
+        print(msg, end=' ')
         enter = ''
         while True:
             key = System.Console.ReadKey()
             if key.Key == 13:
                 break
 
-            if key.Key == 8:
+            if key.Key == 8 and enter != '':
                 sys.stdout.write(' ')
                 sys.stdout.write('\b')
-                self.clearline()
+                self.clearfore()
+                prin(enter)
                 enter = self.popstr(enter, -1)
+            elif key.Key == 8 and enter == '':
+                self.clearlast(msg + ' ')
+                print(msg, end=' ')
 
             if key.Key == 9:
+                self.clearlast(msg + ' ')
                 for k in range(8):
                     sys.stdout.write('\b')
                     sys.stdout.write(' ')
@@ -56,13 +71,14 @@ class cinput:
                         cwords.append(word)
                 if len(cwords) == 1:
                     enter = cwords[0]
-                    print(enter, end='')
+                    print(msg, enter, end='')
                 elif len(cwords) > 1:
                     print(color.Fore.LIGHTBLUE_EX, end='')
                     for word in cwords:
                         print(word, end='    ')
                     print(color.Fore.RESET, end='')
-                    print('\n' + enter, end='')
+                    print('\n' + msg, enter, end='')
+
             if key.Key == System.ConsoleKey.Escape:
                 sys.stdout.write('\b')
                 sys.stdout.write(' ')
@@ -87,7 +103,7 @@ class cinput:
                     break
                 if self.ghostLetters:
                     if word.startswith(enter):
-                        self.clearline()
+                        self.clearfore()
                         self.writeGostWords(word.replace(enter, '', 1))
                         for l in range(len(word.replace(enter, '', 1))):
                             sys.stdout.write('\b')
@@ -99,25 +115,17 @@ class cinput:
                         getword = True
 
             if not getword and self.ghostLetters:
-                self.clearline()
+                self.clearfore()
             if not getword and self.color:
                 print(color.Fore.RED, end='')
-                for l in range(len(enter)):
-                    sys.stdout.write('\b')
-                for l in range(len(enter)):
-                    sys.stdout.write(' ')
-                for l in range(len(enter)):
-                    sys.stdout.write('\b')
+                self.clearlast(enter)
                 sys.stdout.write(enter)
             elif getword and self.color:
                 print(color.Fore.GREEN, end='')
-                for l in range(len(enter)):
-                    sys.stdout.write('\b')
-                for l in range(len(enter)):
-                    sys.stdout.write(' ')
-                for l in range(len(enter)):
-                    sys.stdout.write('\b')
+                self.clearlast(enter)
                 sys.stdout.write(enter)
+        self.clearlast(msg + ' ' + enter)
+        self.clearfore()
         print(color.Fore.RESET, end='')
         return enter
 
