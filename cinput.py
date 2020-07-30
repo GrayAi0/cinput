@@ -84,9 +84,9 @@ class cinput:
                 sys.stdout.write('\b')
 
             if key.Key not in [13, 8, 9, 39, 37, 38, 409, 39, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 121,
-                               123] and key.Key is not System.ConsoleKey.Escape:
+                               123, 91] and key.Key is not System.ConsoleKey.Escape:
                 enter += key.KeyChar
-            elif key.Key in [38, 39, 37, 40, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 12]:
+            elif key.Key in [38, 39, 37, 40, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 12, 91]:
                 sys.stdout.write('\b')
                 sys.stdout.write(' ')
                 sys.stdout.write('\b')
@@ -130,7 +130,6 @@ class cinput:
 
 
 
-
 if __name__ == "__main__":
-    cin = cinput(['print', 'ensure', 'start', 'stop', 'refrich', 'System', 'Random', 'random'])
+    cin = cinput(['print', 'ensure', 'start', 'stop', 'System', 'Random', 'random'])
     cin.readline()
