@@ -104,22 +104,16 @@ class cinput:
         :arg msg: this message will view behind the user input
         :return:str user input
         '''
-        acc = False
-        try:
-            System.Console.ReadKey()
-            acc = True
-            print(msg, end=' ')
-        except:
-            if not acc:
-                print('ERROR:This console does not accept this command')
-                return input(msg+' ')
-            return input()
-        del acc
+        print(msg, end=' ')
         enter = ''
         getword = False
         while True:
+            try:
+                key = System.Console.ReadKey()
+            except:
+                print('ERROR:This console does not accept this command')
+                return input(msg + ' ')
 
-            key = System.Console.ReadKey()
             if key.Key == 13:
                 if self.readenter and enter in self.words:
                     break
