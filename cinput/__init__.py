@@ -12,15 +12,14 @@ import sys, clr, colorama as color
 # p4-redenter: If word not in list and user press enter nothing will happen
 #
 # --------------------------------
+
 color.init()
+
 import System
 
+import Exceptions
+from tools import *
 
-class EmptylistError(Exception):
-    '''
-    :return:self if words list is empty this error will be threw
-    '''
-    pass
 
 
 class cinput:
@@ -43,8 +42,7 @@ class cinput:
 
 
 
-        if len(words) < 1:
-            raise EmptylistError('can\'t continue with empty list')
+
         self.words = list(dict.fromkeys(words))
         self.color = color
         self.ghostLetters = ghostLetters
@@ -53,63 +51,20 @@ class cinput:
     def Help(self):
         return help(cinput)
 
-    def writeGostWords(self,
-                       gword):
-        '''
-        :param gword: This word will write as hidden
-        :return:None
-        '''
-        print(color.Fore.LIGHTBLACK_EX, end='')
-        for letter in gword:
-            print(letter, end='', sep='\r')
-        print(color.Fore.RESET, end='')
-
-    def popstr(self,
-               word,
-               lett):
-        '''
-        :param word: This word you want to clear the letter from it
-        :param lett: This is a letter index that you want to delete it
-        :return: str new word
-        '''
-        word = list(word)
-        if len(word) == 0:
-            return ''
-        word.pop(lett)
-        return ''.join(word)
-
-    def clearfore(self,
-                  lens='a'):
-        '''
-        :param lens: If the lens is 'a', then it will take the most value from the list in terms of letters or write the word you want to take amount the letters from it
-        :return: None
-        '''
-        if lens == 'a': lens = len(max(self.words)) + 2
-        sys.stdout.write(' ' * (lens))
-        sys.stdout.write('\b' * (lens))
-
-    def clearlast(self,
-                  enter):
-        '''
-        :param enter: This will delete the pre-letter index
-        :return: None
-        '''
-        sys.stdout.write('\b' * (len(enter)))
-        sys.stdout.write(' ' * (len(enter)))
-        sys.stdout.write('\b' * (len(enter)))
-
     def readline(self,
                  msg='.cInput>'):
         '''
         :arg msg: this message will view behind the user input
         :return:str user input
         '''
+        if len(self.words) < 1:
+            raise Exceptions.EmptylistError('can\'t continue with empty list')
         print(msg, end=' ')
         enter = ''
         getword = False
         while True:
             try:
-                key = System.Console.ReadKey()
+                key = ReadKey()
             except:
                 print('ERROR:This console does not accept this command')
                 return input(msg + ' ')
@@ -132,14 +87,14 @@ class cinput:
             if key.Key == 8 and enter != '':
                 sys.stdout.write(' ')
                 sys.stdout.write('\b')
-                self.clearfore()
-                enter = self.popstr(enter, -1)
+                clearfore(wordslist=self.words)
+                enter = popstr(enter, -1)
             elif key.Key == 8 and enter == '':
-                self.clearlast(msg + ' ')
+                clearlast(msg + ' ')
                 print(msg, end=' ')
 
             if key.Key == 9:
-                self.clearlast(msg + ' ')
+                clearlast(msg + ' ')
                 for _ in range(8):
                     sys.stdout.write('\b')
                     sys.stdout.write(' ')
@@ -163,8 +118,8 @@ class cinput:
                     if self.ghostLetters:
                         for word in self.words:
                             if word.startswith(enter):
-                                self.clearfore()
-                                self.writeGostWords(word.replace(enter, '', 1))
+                                clearfore(wordslist=self.words)
+                                writeGostWords(word.replace(enter, '', 1))
                                 sys.stdout.write(
                                     '\b' * len(word.replace(enter, '', 1)))
                                 break
@@ -200,8 +155,8 @@ class cinput:
                     break
                 if self.ghostLetters:
                     if word.startswith(enter):
-                        self.clearfore()
-                        self.writeGostWords(word.replace(enter, '', 1))
+                        clearfore(wordslist=self.words)
+                        writeGostWords(word.replace(enter, '', 1))
                         sys.stdout.write('\b' *
                                          len(word.replace(enter, '', 1)))
                         getword = True
@@ -212,10 +167,10 @@ class cinput:
                         getword = True
 
             if not getword and self.ghostLetters:
-                self.clearfore()
+                clearfore(wordslist=self.words)
             if not getword and self.color:
                 print(color.Fore.RED, end='')
-                self.clearlast(enter)
+                clearlast(enter)
                 sys.stdout.write(enter)
                 print(color.Fore.RESET, end='')
             elif getword and self.color:
@@ -224,13 +179,119 @@ class cinput:
                 sys.stdout.write(enter)
                 print(color.Fore.RESET, end='')
 
-        self.clearlast(msg + ' ' + enter)
-        self.clearfore()
+        clearlast(msg + ' ' + enter)
+        clearfore(wordslist=self.words)
+        print(color.Fore.RESET, end='')
+        return enter
+    def readPassword(self, msg, privatelen='o', minlens=8, maxlens=15):
+        '''
+        :arg msg: This message will view behind the user input
+
+        :arg privatelen: This letter will appear instead of any letter the user writes
+
+        :arg minlens: If user letters under this number he cant prees enter
+
+        :arg maxlens: If user letters more this number he cant write more
+
+        :return:str user password input
+        '''
+        print(msg, end=' ')
+        enter = ''
+        while True:
+            try:
+                key = ReadKey()
+            except KeyboardInterrupt:
+                exit(2)
+            except:
+                print('WARN:This console does not accept this command WARN:"YOUR PASSWORD IS NOT SAVE NOW"')
+                return input(msg + ' ')
+
+            if key.Key == 13:
+                if len(enter) <= maxlens and len(enter) >= minlens:
+                    break
+                else:
+                    if len(enter) <= maxlens:
+                        if privatelen != '':
+                            clearlast(enter)
+                        print(msg,
+                              color.Fore.RED + len(enter) * privatelen,
+                              end=color.Fore.RESET)
+                    else:
+                        if privatelen != '':
+                            clearlast(enter)
+                        print(msg,
+                              color.Fore.RED + maxlens * privatelen,
+                              end=color.Fore.RESET)
+
+            if key.Key == 8 and enter != '':
+                sys.stdout.write(' ')
+                sys.stdout.write('\b')
+                enter = popstr(enter, -1)
+            elif key.Key == 8 and enter == '':
+                clearlast(msg + ' ')
+                print(msg, end=' ')
+
+            if key.Key == 9:
+                for _ in range(8):
+                    sys.stdout.write('\b')
+                    sys.stdout.write(' ')
+                    sys.stdout.write('\b')
+
+            if key.Key == System.ConsoleKey.Escape:
+                sys.stdout.write('\b')
+                sys.stdout.write(' ')
+                sys.stdout.write('\b')
+
+
+            if key.Key not in [
+                    13, 8, 9, 39, 37, 38, 409, 39, 112, 113, 114, 115, 116,
+                    117, 118, 119, 120, 121, 121, 123, 91
+            ] and key.Key is not System.ConsoleKey.Escape and len(enter) < maxlens:
+                enter += key.KeyChar
+            elif key.Key in [
+                    38, 39, 37, 40, 112, 113, 114, 115, 116, 117, 118, 119,
+                    120, 121, 12, 91
+            ]:
+                sys.stdout.write('\b')
+                sys.stdout.write(' ')
+                sys.stdout.write('\b')
+
+            elif key.Key in [8]:
+                pass
+
+            if len(enter) >= minlens and len(enter) < maxlens and self.color:
+                print(color.Fore.GREEN, end='')
+                if privatelen != '':
+                    clearlast(' ' + enter)
+                sys.stdout.write(' ' + (len(enter)  * privatelen))
+                print(color.Fore.RESET, end='')
+
+            elif len(enter) < minlens and self.color:
+                print(color.Fore.YELLOW, end='')
+                if privatelen != '':
+                    clearlast(' ' + enter)
+                sys.stdout.write(' ' + (len(enter)  * privatelen))
+                print(color.Fore.RESET, end='')
+            if len(enter) >= maxlens:
+                print('\b ', end='\b')
+
+        clearlast(msg + ' ' + enter)
         print(color.Fore.RESET, end='')
         return enter
 
 
-if __name__ == "__main__":
+def LineExample():
     cin = cinput(['print', 'ensure', 'start', 'stop', 'System', 'Random', 'random'])
     result = cin.readline('.cInput>')
     print('result is:', result)
+
+def PassExample():
+    Input = cinput()
+    read = Input.readPassword('Enter your password:', privatelen='*', minlens=8, maxlens=15)
+    print('Your enter password:', read)
+
+
+
+
+if __name__ == "__main__":
+    PassExample()
