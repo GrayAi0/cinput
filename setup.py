@@ -7,7 +7,7 @@ setup(
     description = 'description',
     author = 'Gray',
     author_email = 'none@none.null',
-    url = 'https://github.com/GrayAi0/cinput_test/archive/1.0.0.tar.gz',
+    url = 'https://github.com/GrayAi0/cinput/archive/1.0.1.tar.gz',
     download_url = 'download link you saved',
     keywords = ['tag1', 'tag2'],
     classifiers = [],
