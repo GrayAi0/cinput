@@ -17,7 +17,9 @@ import System
 
 
 class EmptylistError(Exception):
-    '''if words list is empty this error will be thread'''
+    '''
+    :return:self if words list is empty this error will be threw
+    '''
     pass
 
 
@@ -28,14 +30,15 @@ class cinput:
                  ghostLetters=True,
                  readenter=True):
         '''
-         :arg: words List of words like ['command1', 'testcommand']
+         :arg words: List of words like ['command1', 'testcommand']
 
-         :color: If entered word not in words list then will be colored to red or will be to green
+         :arg color: If entered word not in words list then will be colored to red or will be to green
 
-         :ghostLetters: The entered word will be completed if is in words list
-         :redenter: If word not in list and user press enter nothing will happen
+         :arg ghostLetters: The entered word will be completed if is in words list
 
-         :return: self
+         :arg redenter: If word not in list and user press enter nothing will happen
+
+         :return:object self
         '''
 
 
@@ -47,30 +50,57 @@ class cinput:
         self.ghostLetters = ghostLetters
         self.readenter = readenter
 
-    def writeGostWords(self, gword):
+    def writeGostWords(self,
+                       gword):
+        '''
+        :param gword: This word will write as hidden
+        :return:None
+        '''
         print(color.Fore.LIGHTBLACK_EX, end='')
         for letter in gword:
             print(letter, end='', sep='\r')
         print(color.Fore.RESET, end='')
 
-    def popstr(self, word, lett):
+    def popstr(self,
+               word,
+               lett):
+        '''
+        :param word: This word you want to clear the letter from it
+        :param lett: This is a letter index that you want to delete it
+        :return: str new word
+        '''
         word = list(word)
         if len(word) == 0:
             return ''
         word.pop(lett)
         return ''.join(word)
 
-    def clearfore(self, lens='a'):
+    def clearfore(self,
+                  lens='a'):
+        '''
+        :param lens: If the lens is 'a', then it will take the most value from the list in terms of letters or write the word you want to take amount the letters from it
+        :return: None
+        '''
         if lens == 'a': lens = len(max(self.words)) + 2
         sys.stdout.write(' ' * (lens))
         sys.stdout.write('\b' * (lens))
 
-    def clearlast(self, enter):
+    def clearlast(self,
+                  enter):
+        '''
+        :param enter: This will delete the pre-letter index
+        :return: None
+        '''
         sys.stdout.write('\b' * (len(enter)))
         sys.stdout.write(' ' * (len(enter)))
         sys.stdout.write('\b' * (len(enter)))
 
-    def readline(self, msg='.cInput>'):
+    def readline(self,
+                 msg='.cInput>'):
+        '''
+        :arg msg: this message will view behind the user input
+        :return:str user input
+        '''
         print(msg, end=' ')
         enter = ''
         getword = False
