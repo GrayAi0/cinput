@@ -1,5 +1,5 @@
 import sys, clr, colorama as color
-#--------------------------------
+# --------------------------------
 #
 # cinput v1.0
 #
@@ -11,7 +11,7 @@ import sys, clr, colorama as color
 #
 # p4-redenter: If word not in list and user press enter nothing will happen
 #
-#--------------------------------
+# --------------------------------
 color.init()
 import System
 
@@ -49,6 +49,9 @@ class cinput:
         self.color = color
         self.ghostLetters = ghostLetters
         self.readenter = readenter
+
+    def Help(self):
+        return help(cinput)
 
     def writeGostWords(self,
                        gword):
@@ -101,10 +104,21 @@ class cinput:
         :arg msg: this message will view behind the user input
         :return:str user input
         '''
-        print(msg, end=' ')
+        acc = False
+        try:
+            System.Console.ReadKey()
+            acc = True
+            print(msg, end=' ')
+        except:
+            if not acc:
+                print('ERROR:This console does not accept this command')
+                return input(msg+' ')
+            return input()
+        del acc
         enter = ''
         getword = False
         while True:
+
             key = System.Console.ReadKey()
             if key.Key == 13:
                 if self.readenter and enter in self.words:
@@ -223,6 +237,6 @@ class cinput:
 
 
 if __name__ == "__main__":
-    cin = cinput(
-        ['print', 'ensure', 'start', 'stop', 'System', 'Random', 'random'])
-    cin.readline()
+    cin = cinput(['print', 'ensure', 'start', 'stop', 'System', 'Random', 'random'])
+    result = cin.readline('.cInput>')
+    print('result is:', result)
